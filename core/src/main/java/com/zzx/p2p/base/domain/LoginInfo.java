@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class LoginInfo extends BaseDomain{
     /** 正常用户 */
-    public static final int STATE_NORMAL = 0;
+    public static final int STATE_NORMAL = 1;
     /** 锁定用户 */
     public static final int STATE_LOCKED = 0;
 
