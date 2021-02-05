@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.base.mapper.UserInfoMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.base.domain.UserInfo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="version" property="version" jdbcType="INTEGER"/>
+        <result column="bit_state" property="bitState" jdbcType="BIGINT"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
+        <result column="id_number" property="idNumber" jdbcType="VARCHAR"/>
+        <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+
+        <association column="income_grade_id" property="incomeGrade" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="marriage_id" property="marriage" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="kid_count_id" property="kidCount" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="education_background_id" property="educationBackground" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="house_condition_id" property="houseCondition" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+    </resultMap>
+    <insert id="insert">
+        insert into `user_info` (id, version, bit_state, real_name, id_number, phone_number, income_grade_id,
+          marriage_id, kid_count_id, education_background_id, house_condition_id)
+        values (#{id}, 0, #{bitState,jdbcType=BIGINT}, #{realName,jdbcType=VARCHAR},
+          #{idNumber,jdbcType=VARCHAR}, #{phoneNumber,jdbcType=VARCHAR}, #{incomeGrade.id,jdbcType=BIGINT},
+          #{marriage.id,jdbcType=BIGINT}, #{kidCount.id,jdbcType=BIGINT}, #{educationBackground.id,jdbcType=BIGINT},
+          #{houseCondition.id,jdbcType=BIGINT})
+    </insert>
+    <update id="updateByPrimaryKey">
+        update `user_info`
+        set version = version + 1,
+          bit_state = #{bitState,jdbcType=BIGINT},
+          real_name = #{realName,jdbcType=VARCHAR},
+          id_number = #{idNumber,jdbcType=VARCHAR},
+          phone_number = #{phoneNumber,jdbcType=VARCHAR},
+          income_grade_id = #{incomeGrade.id,jdbcType=BIGINT},
+          marriage_id = #{marriage.id,jdbcType=BIGINT},
+          kid_count_id = #{kidCount.id,jdbcType=BIGINT},
+          education_background_id = #{educationBackground.id,jdbcType=BIGINT},
+          house_condition_id = #{houseCondition.id,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT} AND version = #{version}
+    </update>
+
+    <sql id="base_column">
+        id, version, bit_state, real_name, id_number, phone_number, income_grade_id,
+        marriage_id, kid_count_id, education_background_id, house_condition_id
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select <include refid="base_column"/>
+        from `user_info`
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+</mapper>
