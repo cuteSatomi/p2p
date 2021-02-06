@@ -23,4 +23,14 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new RuntimeException("乐观锁失败，UserInfo: " + userInfo.getId());
         }
     }
+
+    @Override
+    public void add(UserInfo userInfo) {
+        userInfoMapper.insert(userInfo);
+    }
+
+    @Override
+    public UserInfo get(Long id) {
+        return userInfoMapper.selectByPrimaryKey(id);
+    }
 }

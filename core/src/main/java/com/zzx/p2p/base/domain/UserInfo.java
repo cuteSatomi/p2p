@@ -15,7 +15,7 @@ public class UserInfo extends BaseDomain {
     /** 版本号 */
     private int version;
     /** 状态码 */
-    private long bitState;
+    private long bitState = 0;
     private String realName;
     private String idNumber;
     private String phoneNumber;

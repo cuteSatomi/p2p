@@ -1,8 +1,12 @@
 package com.zzx.p2p.base.service.impl;
 
+import com.zzx.p2p.base.domain.Account;
 import com.zzx.p2p.base.domain.LoginInfo;
+import com.zzx.p2p.base.domain.UserInfo;
 import com.zzx.p2p.base.mapper.LoginInfoMapper;
+import com.zzx.p2p.base.service.AccountService;
 import com.zzx.p2p.base.service.LoginInfoService;
+import com.zzx.p2p.base.service.UserInfoService;
 import com.zzx.p2p.base.util.MD5;
 import com.zzx.p2p.base.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,12 @@ public class LoginInfoServiceImpl implements LoginInfoService {
     @Autowired
     private LoginInfoMapper loginInfoMapper;
 
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private UserInfoService userInfoService;
+
     @Override
     public void register(String username, String password) {
         int count = loginInfoMapper.getCountByUsername(username);
@@ -27,6 +37,17 @@ public class LoginInfoServiceImpl implements LoginInfoService {
             loginInfo.setPassword(MD5.encode(password));
             loginInfo.setState(LoginInfo.STATE_NORMAL);
             loginInfoMapper.insert(loginInfo);
+
+            // 初始化账户信息和userInfo
+            Account account = new Account();
+            // account的id就是loginInfo的id，这也是没有给account表的id字段设置主键自增的原因，因为loginInfo和account表就通过主键进行一对一关联
+            account.setId(loginInfo.getId());
+            accountService.add(account);
+
+            UserInfo userInfo = new UserInfo();
+            // userInfo的id也就是loginInfo的id，原因同上
+            userInfo.setId(loginInfo.getId());
+            userInfoService.add(userInfo);
         } else {
             // 用户已存在则抛出异常
             throw new RuntimeException("该用户名已存在");

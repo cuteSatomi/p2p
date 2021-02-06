@@ -23,4 +23,14 @@ public class AccountServiceImpl implements AccountService {
             throw new RuntimeException("乐观锁失败，Account: " + account.getId());
         }
     }
+
+    @Override
+    public void add(Account account) {
+        accountMapper.insert(account);
+    }
+
+    @Override
+    public Account get(Long id) {
+        return accountMapper.selectByPrimaryKey(id);
+    }
 }

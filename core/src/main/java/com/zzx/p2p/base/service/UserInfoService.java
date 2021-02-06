@@ -14,4 +14,17 @@ public interface UserInfoService {
      * @param userInfo
      */
     void update(UserInfo userInfo);
+
+    /**
+     * 添加userInfo
+     * @param userInfo
+     */
+    void add(UserInfo userInfo);
+
+    /**
+     * 根据id查询userInfo对象
+     * @param id
+     * @return
+     */
+    UserInfo get(Long id);
 }

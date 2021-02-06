@@ -1,6 +1,8 @@
 package com.zzx.p2p.base.domain;
 
 import com.zzx.p2p.base.util.BidConst;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
@@ -10,6 +12,8 @@ import java.math.BigDecimal;
  * @author zzx
  * @date 2021-02-05 10:10:37
  */
+@Getter
+@Setter
 public class Account extends BaseDomain {
     /** 版本号 */
     private int version;
@@ -29,4 +33,12 @@ public class Account extends BaseDomain {
     private BigDecimal borrowLimit = BidConst.INIT_BORROW_LIMIT;
     /** 账户剩余授信金额 */
     private BigDecimal remainBorrowLimit = BidConst.INIT_BORROW_LIMIT;
+
+    /**
+     *  账户的总金额
+     * @return
+     */
+    public BigDecimal getTotalAmount(){
+        return usableAmount.add(frozenAmount).add(unReceivePrincipal);
+    }
 }
