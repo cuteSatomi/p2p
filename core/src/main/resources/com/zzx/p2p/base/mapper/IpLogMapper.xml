@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.base.mapper.IpLogMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.base.domain.IpLog">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="ip" property="ip" jdbcType="VARCHAR"/>
+        <result column="state" property="state" jdbcType="TINYINT"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="login_time" property="loginTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `ip_log` (ip, state, username,
+          login_time)
+        values (#{ip,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT}, #{username,jdbcType=VARCHAR},
+          #{loginTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <sql id="base_column">
+        id, ip, state, username, login_time
+    </sql>
+    <sql id="base_where">
+        <where>
+            <if test="beginDate!=null">
+                and login_time &gt;= #{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and login_time &lt;= #{endDate}
+            </if>
+            <if test="state>-1">
+                and state = #{state}
+            </if>
+            <if test="username!=null">
+                and username = #{username}
+            </if>
+        </where>
+    </sql>
+
+    <select id="queryForCount" resultType="int">
+        select count(id) from ip_log
+        <include refid="base_where"/>
+    </select>
+
+    <select id="query" resultMap="BaseResultMap">
+        select <include refid="base_column"/>
+        from ip_log
+        <include refid="base_where"/>
+        order by login_time desc
+        limit #{start},#{pageSize}
+    </select>
+</mapper>

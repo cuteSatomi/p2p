@@ -1,8 +1,10 @@
 package com.zzx.p2p.base.service.impl;
 
 import com.zzx.p2p.base.domain.Account;
+import com.zzx.p2p.base.domain.IpLog;
 import com.zzx.p2p.base.domain.LoginInfo;
 import com.zzx.p2p.base.domain.UserInfo;
+import com.zzx.p2p.base.mapper.IpLogMapper;
 import com.zzx.p2p.base.mapper.LoginInfoMapper;
 import com.zzx.p2p.base.service.AccountService;
 import com.zzx.p2p.base.service.LoginInfoService;
@@ -11,6 +13,8 @@ import com.zzx.p2p.base.util.MD5;
 import com.zzx.p2p.base.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * @author zzx
@@ -26,6 +30,9 @@ public class LoginInfoServiceImpl implements LoginInfoService {
 
     @Autowired
     private UserInfoService userInfoService;
+
+    @Autowired
+    private IpLogMapper ipLogMapper;
 
     @Override
     public void register(String username, String password) {
@@ -60,13 +67,20 @@ public class LoginInfoServiceImpl implements LoginInfoService {
     }
 
     @Override
-    public void login(String username, String password) {
+    public LoginInfo login(String username, String password, String ip) {
         LoginInfo current = loginInfoMapper.login(username, MD5.encode(password));
+        IpLog ipLog = new IpLog();
+        ipLog.setIp(ip);
+        ipLog.setLoginTime(new Date());
+        ipLog.setUsername(username);
         if (current != null) {
             // 放到UserContext中
             UserContext.putCurrent(current);
+            ipLog.setState(IpLog.LOGIN_SUCCESS);
         } else {
-            throw new RuntimeException("用户名或密码错误！");
+            ipLog.setState(IpLog.LOGIN_FAILED);
         }
+        ipLogMapper.insert(ipLog);
+        return current;
     }
 }
