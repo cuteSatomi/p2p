@@ -5,18 +5,18 @@
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="ip" property="ip" jdbcType="VARCHAR"/>
         <result column="state" property="state" jdbcType="TINYINT"/>
+        <result column="user_type" property="userType" jdbcType="TINYINT"/>
         <result column="username" property="username" jdbcType="VARCHAR"/>
         <result column="login_time" property="loginTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into `ip_log` (ip, state, username,
-          login_time)
+        insert into `ip_log` (ip, state, username, login_time, user_type)
         values (#{ip,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT}, #{username,jdbcType=VARCHAR},
-          #{loginTime,jdbcType=TIMESTAMP})
+          #{loginTime,jdbcType=TIMESTAMP}, #{userType})
     </insert>
 
     <sql id="base_column">
-        id, ip, state, username, login_time
+        id, ip, state, username, login_time, user_type
     </sql>
     <sql id="base_where">
         <where>

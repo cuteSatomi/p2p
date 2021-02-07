@@ -6,20 +6,23 @@
         <result column="username" property="username" jdbcType="VARCHAR"/>
         <result column="password" property="password" jdbcType="VARCHAR"/>
         <result column="state" property="state" jdbcType="BIT"/>
+        <result column="user_type" property="userType" jdbcType="BIT"/>
     </resultMap>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into `login_info` (username, password, state)
-        values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{state,jdbcType=BIT})
+        insert into `login_info` (username, password, state, user_type)
+        values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{state,jdbcType=BIT}, #{userType})
     </insert>
     <update id="updateByPrimaryKey">
         update `login_info`
         set username = #{username,jdbcType=VARCHAR},
           password = #{password,jdbcType=VARCHAR},
-          state = #{state,jdbcType=BIT}
+          state = #{state,jdbcType=BIT},
+          user_type = #{state,userType=BIT},
         where id = #{id,jdbcType=BIGINT}
     </update>
+
     <sql id="base_column">
-        id, username, password, state
+        id, username, password, state, user_type
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap">
@@ -39,6 +42,9 @@
     <select id="login" resultMap="BaseResultMap">
         select
         <include refid="base_column"/>
-        from login_info where username = #{username} and password = #{password}
+        from login_info where username = #{username} and password = #{password} and user_type = #{userType}
+    </select>
+    <select id="countByUserType" resultType="int">
+        select count(id) from login_info where user_type = #{userType}
     </select>
 </mapper>

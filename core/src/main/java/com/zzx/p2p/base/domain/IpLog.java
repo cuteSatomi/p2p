@@ -22,8 +22,16 @@ public class IpLog extends BaseDomain {
     private Date loginTime;
     private String username;
     private int state;
+    /**
+     * 用户登录类型
+     */
+    private int userType;
 
     public String getStateDisplay() {
         return state == LOGIN_SUCCESS ? "登录成功" : "登录失败";
+    }
+
+    public String userTypeDisplay() {
+        return userType == LoginInfo.USER_CLIENT ? "前台用户" : "后台管理员";
     }
 }

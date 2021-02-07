@@ -19,4 +19,9 @@ public class BidConst {
     public static final BigDecimal ZERO = new BigDecimal("0.0000");
     /** 初始授信额度 */
     public static final BigDecimal INIT_BORROW_LIMIT = new BigDecimal("6000.0000");
+
+    /** 默认管理员的用户名 */
+    public static final String DEFAULT_ADMIN_NAME = "admin";
+    /** 默认管理员的密码 */
+    public static final String DEFAULT_ADMIN_PASSWORD = "123";
 }

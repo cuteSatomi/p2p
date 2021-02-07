@@ -9,6 +9,7 @@ import com.zzx.p2p.base.mapper.LoginInfoMapper;
 import com.zzx.p2p.base.service.AccountService;
 import com.zzx.p2p.base.service.LoginInfoService;
 import com.zzx.p2p.base.service.UserInfoService;
+import com.zzx.p2p.base.util.BidConst;
 import com.zzx.p2p.base.util.MD5;
 import com.zzx.p2p.base.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class LoginInfoServiceImpl implements LoginInfoService {
             loginInfo.setUsername(username);
             loginInfo.setPassword(MD5.encode(password));
             loginInfo.setState(LoginInfo.STATE_NORMAL);
+            loginInfo.setUserType(LoginInfo.USER_CLIENT);
             loginInfoMapper.insert(loginInfo);
 
             // 初始化账户信息和userInfo
@@ -67,12 +69,13 @@ public class LoginInfoServiceImpl implements LoginInfoService {
     }
 
     @Override
-    public LoginInfo login(String username, String password, String ip) {
-        LoginInfo current = loginInfoMapper.login(username, MD5.encode(password));
+    public LoginInfo login(String username, String password, String ip, int userType) {
+        LoginInfo current = loginInfoMapper.login(username, MD5.encode(password), userType);
         IpLog ipLog = new IpLog();
         ipLog.setIp(ip);
         ipLog.setLoginTime(new Date());
         ipLog.setUsername(username);
+        ipLog.setUserType(userType);
         if (current != null) {
             // 放到UserContext中
             UserContext.putCurrent(current);
@@ -82,5 +85,18 @@ public class LoginInfoServiceImpl implements LoginInfoService {
         }
         ipLogMapper.insert(ipLog);
         return current;
+    }
+
+    @Override
+    public void initAdmin() {
+        int count = loginInfoMapper.countByUserType(LoginInfo.USER_MANAGER);
+        if (count == 0) {
+            LoginInfo admin = new LoginInfo();
+            admin.setUsername(BidConst.DEFAULT_ADMIN_NAME);
+            admin.setPassword(MD5.encode(BidConst.DEFAULT_ADMIN_PASSWORD));
+            admin.setState(LoginInfo.STATE_NORMAL);
+            admin.setUserType(LoginInfo.USER_MANAGER);
+            loginInfoMapper.insert(admin);
+        }
     }
 }
