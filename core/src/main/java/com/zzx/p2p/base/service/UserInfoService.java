@@ -27,4 +27,11 @@ public interface UserInfoService {
      * @return
      */
     UserInfo get(Long id);
+
+    /**
+     * 给用户绑定手机号
+     * @param phoneNumber
+     * @param verifyCode
+     */
+    void bindPhone(String phoneNumber, String verifyCode);
 }

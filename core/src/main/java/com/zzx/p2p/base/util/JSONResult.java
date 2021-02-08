@@ -23,5 +23,4 @@ public class JSONResult {
         this.success = success;
         this.msg = msg;
     }
-
 }

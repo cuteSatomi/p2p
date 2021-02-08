@@ -47,6 +47,10 @@ public class PageResult {
         return new PageResult(new ArrayList<>(), 0, 1, pageSize);
     }
 
+    public int getTotalPage() {
+        return totalPage == 0 ? 1 : totalPage;
+    }
+
     public PageResult(List listData, Integer totalCount, Integer currentPage, Integer pageSize) {
         this.listData = listData;
         this.totalCount = totalCount;

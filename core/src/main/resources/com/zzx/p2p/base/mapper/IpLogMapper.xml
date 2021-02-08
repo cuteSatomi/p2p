@@ -32,6 +32,9 @@
             <if test="username!=null">
                 and username = #{username}
             </if>
+            <if test="userType>-1">
+                and user_type = #{userType}
+            </if>
         </where>
     </sql>
 

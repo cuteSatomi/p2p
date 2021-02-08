@@ -24,4 +24,7 @@ public class BidConst {
     public static final String DEFAULT_ADMIN_NAME = "admin";
     /** 默认管理员的密码 */
     public static final String DEFAULT_ADMIN_PASSWORD = "123";
+
+    /** 手机验证码有效期 */
+    public static final int VERIFY_CODE_VALIDATE_SECOND = 300;
 }

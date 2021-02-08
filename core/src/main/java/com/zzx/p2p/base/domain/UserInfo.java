@@ -1,5 +1,6 @@
 package com.zzx.p2p.base.domain;
 
+import com.zzx.p2p.base.util.BitStatesUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,4 +30,32 @@ public class UserInfo extends BaseDomain {
     private SystemDictionaryItem educationBackground;
     /** 住房条件 */
     private SystemDictionaryItem houseCondition;
+
+    // 判断是否已经绑定了手机
+    public boolean getIsBindPhone() {
+        return BitStatesUtils.hasState(this.bitState,
+                BitStatesUtils.OP_BIND_PHONE);
+    }
+
+    // 判断是否已经绑定了邮箱
+    public boolean getIsBindEmail() {
+        return BitStatesUtils.hasState(this.bitState,
+                BitStatesUtils.OP_BIND_EMAIL);
+    }
+
+    // 添加绑定的状态码
+    public void addState(Long state) {
+        setBitState(BitStatesUtils.addState(this.bitState, state));
+    }
+
+    // 判断用户是否已经实名认证
+    public boolean getIsRealAuth() {
+        return BitStatesUtils.hasState(this.bitState,
+                BitStatesUtils.OP_REAL_AUTH);
+    }
+
+    // 移除状态码
+    public void  removeState(Long state) {
+        bitState = BitStatesUtils.removeState(this.bitState, state);
+    }
 }

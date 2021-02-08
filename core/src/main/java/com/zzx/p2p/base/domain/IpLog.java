@@ -31,7 +31,7 @@ public class IpLog extends BaseDomain {
         return state == LOGIN_SUCCESS ? "登录成功" : "登录失败";
     }
 
-    public String userTypeDisplay() {
+    public String getUserTypeDisplay() {
         return userType == LoginInfo.USER_CLIENT ? "前台用户" : "后台管理员";
     }
 }
