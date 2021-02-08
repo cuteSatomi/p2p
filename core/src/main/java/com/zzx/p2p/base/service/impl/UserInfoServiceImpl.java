@@ -49,11 +49,13 @@ public class UserInfoServiceImpl implements UserInfoService {
             boolean flag = verifyCodeService.verify(phoneNumber, verifyCode);
             // 如果合法绑定手机
             if (flag) {
+                current.setPhoneNumber(phoneNumber);
                 current.addState(BitStatesUtils.OP_BIND_PHONE);
                 update(current);
+            } else {
+                // 抛出异常，之前这里没有写在else里，导致执行到这里一定回抛异常，所以一直报错，真是操了
+                throw new RuntimeException("绑定手机失败!");
             }
-            // 抛出异常
-            throw new RuntimeException("绑定手机失败!");
         }
     }
 }
