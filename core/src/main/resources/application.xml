@@ -15,7 +15,7 @@
     <context:component-scan base-package="com.zzx.p2p"/>
 
     <!-- 引入外部配置文件  -->
-    <context:property-placeholder location="classpath:db.properties" system-properties-mode="NEVER"/>
+    <context:property-placeholder location="classpath:db.properties,classpath:sms.properties" system-properties-mode="NEVER"/>
     <!-- 配置数据库连接池 -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
