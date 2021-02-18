@@ -27,4 +27,9 @@ public class BidConst {
 
     /** 手机验证码有效期 */
     public static final int VERIFY_CODE_VALIDATE_SECOND = 300;
+    /** 邮箱验证的有效期 */
+    public static final int VERIFY_EMAIL_VALIDATE_DAY = 5;
+
+    /** 借款需要达到的最低风控分数 */
+    public static final int BASE_BORROW_SCORE = 30;
 }

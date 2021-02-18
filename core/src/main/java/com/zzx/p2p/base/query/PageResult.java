@@ -12,29 +12,19 @@ import java.util.List;
 @Getter
 @SuppressWarnings("all")
 public class PageResult {
-    /**
-     * 当前页的结果集查询
-     */
+    /** 当前页的结果集查询 */
     private List listData;
-    /**
-     * 总数据条数
-     */
+    /**  总数据条数 */
     private Integer totalCount;
 
     private Integer currentPage = 1;
     private Integer pageSize = 10;
 
-    /**
-     * 上一页
-     */
+    /** 上一页 */
     private Integer prevPage;
-    /**
-     * 下一页
-     */
+    /** 下一页 */
     private Integer nextPage;
-    /**
-     * 总页数
-     */
+    /** 总页数 */
     private Integer totalPage;
 
     /**

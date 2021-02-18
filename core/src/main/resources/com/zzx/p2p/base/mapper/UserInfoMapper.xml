@@ -5,9 +5,12 @@
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="version" property="version" jdbcType="INTEGER"/>
         <result column="bit_state" property="bitState" jdbcType="BIGINT"/>
+        <result column="score" property="score" jdbcType="INTEGER"/>
+        <result column="real_auth_id" property="realAuthId" jdbcType="BIGINT"/>
         <result column="real_name" property="realName" jdbcType="VARCHAR"/>
         <result column="id_number" property="idNumber" jdbcType="VARCHAR"/>
         <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
 
         <association column="income_grade_id" property="incomeGrade" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
         <association column="marriage_id" property="marriage" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
@@ -16,20 +19,23 @@
         <association column="house_condition_id" property="houseCondition" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
     </resultMap>
     <insert id="insert">
-        insert into `user_info` (id, version, bit_state, real_name, id_number, phone_number, income_grade_id,
-          marriage_id, kid_count_id, education_background_id, house_condition_id)
-        values (#{id}, 0, #{bitState,jdbcType=BIGINT}, #{realName,jdbcType=VARCHAR},
+        insert into `user_info` (id, version, bit_state, score, real_name, email, id_number, phone_number, income_grade_id,
+          marriage_id, kid_count_id, education_background_id, house_condition_id, real_auth_id)
+        values (#{id}, 0, #{bitState,jdbcType=BIGINT}, #{score}, #{realName,jdbcType=VARCHAR}, #{email},
           #{idNumber,jdbcType=VARCHAR}, #{phoneNumber,jdbcType=VARCHAR}, #{incomeGrade.id,jdbcType=BIGINT},
           #{marriage.id,jdbcType=BIGINT}, #{kidCount.id,jdbcType=BIGINT}, #{educationBackground.id,jdbcType=BIGINT},
-          #{houseCondition.id,jdbcType=BIGINT})
+          #{houseCondition.id,jdbcType=BIGINT}, #{realAuthId})
     </insert>
     <update id="updateByPrimaryKey">
         update `user_info`
         set version = version + 1,
+          score = #{score},
+          real_auth_id = #{realAuthId},
           bit_state = #{bitState,jdbcType=BIGINT},
           real_name = #{realName,jdbcType=VARCHAR},
           id_number = #{idNumber,jdbcType=VARCHAR},
           phone_number = #{phoneNumber,jdbcType=VARCHAR},
+          email = #{email},
           income_grade_id = #{incomeGrade.id,jdbcType=BIGINT},
           marriage_id = #{marriage.id,jdbcType=BIGINT},
           kid_count_id = #{kidCount.id,jdbcType=BIGINT},
@@ -39,7 +45,7 @@
     </update>
 
     <sql id="base_column">
-        id, version, bit_state, real_name, id_number, phone_number, income_grade_id,
+        id, version, bit_state, score, real_name, id_number, phone_number, email, real_auth_id, income_grade_id,
         marriage_id, kid_count_id, education_background_id, house_condition_id
     </sql>
 

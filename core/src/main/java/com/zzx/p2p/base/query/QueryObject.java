@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 abstract public class QueryObject {
     private Integer currentPage = 1;
-    private Integer pageSize = 5;
+    private Integer pageSize = 10;
 
     public int getStart() {
         return (currentPage - 1) * pageSize;

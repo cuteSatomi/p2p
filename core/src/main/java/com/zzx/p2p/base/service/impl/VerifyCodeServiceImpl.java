@@ -59,10 +59,8 @@ public class VerifyCodeServiceImpl implements VerifyCodeService {
                 connection.setDoOutput(true);
                 // 写入POST请求体
                 connection.getOutputStream().write(content.toString().getBytes());
-                System.out.println(content);
                 // 得到响应流，将一个输入流按照指定编码转换为String
                 String response = StreamUtils.copyToString(connection.getInputStream(), Charset.forName("UTF-8"));
-                System.out.println(response);
                 if(response.startsWith("success")){
                     // 发送成功，把手机号码，验证码，以及发送时间装配到VO中并保存到session中
                     verifyCodeVO = new VerifyCodeVO();

@@ -13,6 +13,7 @@
             if ($("#showBindPhoneModal").size() > 0) {
                 // 点击立即绑定弹出模态框
                 $("#showBindPhoneModal").click(function () {
+                    $("#bindPhoneForm")[0].reset();
                     $("#bindPhoneModal").modal("show");
                 });
 
@@ -59,6 +60,26 @@
                 });
                 $("#bindPhone").click(function () {
                     $("#bindPhoneForm").submit();
+                });
+            }
+
+            if ($("#showBindEmailModal").size() > 0) {
+                // 点击立即绑定弹出模态框
+                $("#showBindEmailModal").click(function () {
+                    $("#bindEmailForm")[0].reset();
+                    $("#bindEmailModal").modal("show");
+                });
+
+                // 给提交按钮绑定事件
+                $("#bindEmailForm").ajaxForm(function (data) {
+                    if(data.success){
+                        window.location.reload();
+                    }else {
+                        $.messager.popup(data.msg);
+                    }
+                });
+                $("#bindEmail").click(function () {
+                    $("#bindEmailForm").submit();
                 });
             }
         });
@@ -170,10 +191,17 @@
                                     </div>
                                     <div class="el-accoun-auth-right">
                                         <h5>邮箱认证</h5>
-                                        <p>
-                                            已绑定
-                                            <a href="#">查看</a>
-                                        </p>
+                                        <#if userInfo.isBindEmail>
+                                            <p>
+                                                已绑定
+                                                <a href="#">查看</a>
+                                            </p>
+                                        <#else>
+                                            <p>
+                                                未绑定
+                                                <a href="javascript:;" id="showBindEmailModal">去绑定</a>
+                                            </p>
+                                        </#if>
                                     </div>
                                     <div class="clearfix"></div>
                                     <p class="info">您可以设置邮箱来接收重要信息</p>
@@ -242,32 +270,33 @@
     </div>
 </#if>
 
-<div class="modal fade" id="bindEmailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">绑定邮箱</h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-horizontal" id="bindEmailForm" method="post" action="/sendEmail.do">
-                    <div class="form-group">
-                        <label for="email" class="col-sm-2 control-label">Email:</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" id="email" name="email"/>
+<#if !userInfo.isBindEmail>
+    <div class="modal fade" id="bindEmailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">绑定邮箱</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="bindEmailForm" method="post" action="/sendEmail.do">
+                        <div class="form-group">
+                            <label for="email" class="col-sm-2 control-label">Email:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="email" name="email"/>
+                            </div>
                         </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                <button type="button" class="btn btn-primary" id="bindEmail">保存</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="bindEmail">保存</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
+</#if>
 
 <#include "common/footer-tpl.ftl" />
 </body>

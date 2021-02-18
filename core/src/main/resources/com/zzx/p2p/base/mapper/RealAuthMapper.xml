@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.base.mapper.RealAuthMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.base.domain.RealAuth">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="TINYINT"/>
+        <result column="born_date" property="bornDate" jdbcType="VARCHAR"/>
+        <result column="id_number" property="idNumber" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="state" property="state" jdbcType="TINYINT"/>
+        <result column="image1" property="image1" jdbcType="VARCHAR"/>
+        <result column="image2" property="image2" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP"/>
+        <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="FullResultMap" type="com.zzx.p2p.base.domain.RealAuth" extends="BaseResultMap">
+        <association property="applier" javaType="com.zzx.p2p.base.domain.LoginInfo" columnPrefix="ap_">
+            <id property="id" column="id"/>
+            <result property="username" column="username"/>
+        </association>
+        <association property="auditor" javaType="com.zzx.p2p.base.domain.LoginInfo" columnPrefix="au_">
+            <id property="id" column="id"/>
+            <result property="username" column="username"/>
+        </association>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `real_auth` (real_name, sex, born_date, id_number, address, state,
+          image1, image2, remark, audit_time, apply_time, applier_id, auditor_id)
+        values (#{realName,jdbcType=VARCHAR}, #{sex,jdbcType=TINYINT}, #{bornDate,jdbcType=VARCHAR},
+          #{idNumber,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{state,jdbcType=TINYINT},
+          #{image1,jdbcType=VARCHAR}, #{image2,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR},
+          #{auditTime,jdbcType=TIMESTAMP}, #{applyTime,jdbcType=TIMESTAMP}, #{applier.id,jdbcType=BIGINT},
+          #{auditor.id,jdbcType=BIGINT})
+    </insert>
+    <update id="updateByPrimaryKey">
+        update `real_auth`
+        set real_name = #{realName,jdbcType=VARCHAR},
+          sex = #{sex,jdbcType=TINYINT},
+          born_date = #{bornDate,jdbcType=VARCHAR},
+          id_number = #{idNumber,jdbcType=VARCHAR},
+          address = #{address,jdbcType=VARCHAR},
+          state = #{state,jdbcType=TINYINT},
+          image1 = #{image1,jdbcType=VARCHAR},
+          image2 = #{image2,jdbcType=VARCHAR},
+          remark = #{remark,jdbcType=VARCHAR},
+          audit_time = #{auditTime,jdbcType=TIMESTAMP},
+          apply_time = #{applyTime,jdbcType=TIMESTAMP},
+          applier_id = #{applier.id,jdbcType=BIGINT},
+          auditor_id = #{auditor.id,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <sql id="base_column">
+        id, real_name, sex, born_date, id_number, address, state, image1, image2,
+        remark, audit_time, apply_time
+    </sql>
+    <sql id="full_column">
+        r.id, r.real_name, r.sex, r.born_date, r.id_number, r.address, r.state, r.image1, r.image2,
+        r.remark, r.audit_time, r.apply_time, ap.id as ap_id, ap.username as ap_username, au.id as au_id, au.username as au_username
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="FullResultMap">
+        select
+        <include refid="full_column"/>
+        from `real_auth` r inner join login_info ap on r.applier_id = ap.id left join login_info au on r.auditor_id =
+        au.id
+        where r.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <sql id="base_where">
+        <where>
+            <if test="beginDate!=null">
+                and r.apply_time &gt;= #{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and r.apply_time &lt;= #{endDate}
+            </if>
+            <if test="state>-1">
+                and r.state = #{state}
+            </if>
+        </where>
+    </sql>
+
+    <select id="queryForCount" resultType="int">
+        select count(id) from real_auth r
+        <include refid="base_where"/>
+    </select>
+    <select id="query" resultMap="FullResultMap">
+        select
+        <include refid="full_column"/>
+        from `real_auth` r inner join login_info ap on r.applier_id = ap.id left join login_info au on r.auditor_id =
+        au.id
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
+    </select>
+</mapper>

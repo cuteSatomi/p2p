@@ -9,11 +9,15 @@ public class BitStatesUtils {
     /** 用户绑定手机状态码 */
     public final static Long OP_BIND_PHONE = 1L;
     /** 用户绑定邮箱状态码 */
-    public final static Long OP_BIND_EMAIL = 2L;
+    public final static Long OP_BIND_EMAIL = 1L << 1;
+    /** 用户填写资料状态码 */
+    public final static Long OP_BASIC_INFO = 1L << 2;
     /** 用户实名认证状态码 */
-    public final static Long OP_REAL_AUTH = 4L;
+    public final static Long OP_REAL_AUTH = 1L << 3;
+    /** 用户视频认证状态码 */
+    public final static Long OP_VIDEO_AUTH = 1L << 4;
     /** 用户是否是vip状态码 */
-    public final static Long OP_VIP = 8L;
+    public final static Long OP_VIP = 1L << 5;
 
     /**
      * @param states 所有状态值

@@ -46,4 +46,30 @@ public class PersonalController {
         }
         return result;
     }
+
+    @RequireLogin
+    @RequestMapping("/sendEmail")
+    @ResponseBody
+    public JSONResult sendEmail(String email) {
+        JSONResult result = new JSONResult();
+        try {
+            userInfoService.sendVerifyEmail(email);
+        } catch (RuntimeException e) {
+            result.setSuccess(false);
+            result.setMsg(e.getMessage());
+        }
+        return result;
+    }
+
+    @RequestMapping("/bindEmail")
+    public String bindEmail(String key, Model model) {
+        try {
+            userInfoService.bindEmail(key);
+            model.addAttribute("success", true);
+        } catch (RuntimeException e) {
+            model.addAttribute("success", false);
+            model.addAttribute("msg", e.getMessage());
+        }
+        return "checkmail_result";
+    }
 }

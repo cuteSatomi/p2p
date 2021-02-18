@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.base.mapper.MailVerifyMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.base.domain.MailVerify">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_info_id" property="userInfoId" jdbcType="BIGINT"/>
+        <result column="send_date" property="sendDate" jdbcType="TIMESTAMP"/>
+        <result column="uuid" property="uuid" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `mail_verify` (user_info_id, send_date, uuid, email)
+        values (#{userInfoId,jdbcType=BIGINT}, #{sendDate,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR},
+          #{email,jdbcType=VARCHAR})
+    </insert>
+    <select id="selectByUUID" resultMap="BaseResultMap">
+        select id, user_info_id, send_date, uuid, email
+        from `mail_verify`
+        where uuid = #{uuid}
+    </select>
+</mapper>

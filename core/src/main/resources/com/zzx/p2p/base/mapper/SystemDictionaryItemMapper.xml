@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper">
-    <resultMap id="BaseResultMap" type="com.zzx.p2p.base.domain.SystemDictionaryItem">
+    <resultMap id="smallResultMap" type="com.zzx.p2p.base.domain.SystemDictionaryItem">
         <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
         <result column="title" property="title" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.base.domain.SystemDictionaryItem" extends="smallResultMap">
+        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
         <result column="sequence" property="sequence" jdbcType="TINYINT"/>
     </resultMap>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -18,9 +20,46 @@
           sequence = #{sequence,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
+
+    <sql id="base_column">
+        id, parent_id, title, sequence
+    </sql>
+
     <select id="selectByPrimaryKey" resultMap="BaseResultMap">
-        select id, parent_id, title, sequence
+        select
+        <include refid="base_column"/>
         from `system_dictionary_item`
         where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <sql id="base_where">
+        <where>
+            <if test="parentId!=null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="keyword!=null">
+                and title like concat('%', #{keyword}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <select id="queryForCount" resultType="int">
+        select count(id) from system_dictionary_item
+        <include refid="base_where"/>
+    </select>
+    <select id="query" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from system_dictionary_item
+        <include refid="base_where"/>
+        limit #{start}, #{pageSize}
+    </select>
+
+    <select id="listByParentSn" resultMap="smallResultMap">
+        select item.id as id, item.title as title from
+        system_dictionary_item item left join system_dictionary dict
+        on item.parent_id = dict.id
+        where dict.sn = #{sn}
+        order by item.sequence desc
     </select>
 </mapper>
