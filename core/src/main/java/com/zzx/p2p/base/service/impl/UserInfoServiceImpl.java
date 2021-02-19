@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -132,5 +134,10 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         // 执行更新
         update(old);
+    }
+
+    @Override
+    public List<Map<String, Object>> autocomplete(String keyword) {
+        return userInfoMapper.autocomplete(keyword);
     }
 }

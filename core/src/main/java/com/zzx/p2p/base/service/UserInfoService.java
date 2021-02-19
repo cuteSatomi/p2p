@@ -2,6 +2,9 @@ package com.zzx.p2p.base.service;
 
 import com.zzx.p2p.base.domain.UserInfo;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 用户相关服务
  *
@@ -58,4 +61,11 @@ public interface UserInfoService {
      * @param userInfo
      */
     void updateBasicInfo(UserInfo userInfo);
+
+    /**
+     * 用于用户自动补全
+     * @param keyword
+     * @return
+     */
+    List<Map<String, Object>> autocomplete(String keyword);
 }

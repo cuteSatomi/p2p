@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 实名认证查询对象
+ * 视频审核查询对象
  *
  * @author zzx
- * @date 2021-02-18 16:06
+ * @date 2021-02-19 11:18:10
  */
 @Getter
 @Setter
-public class RealAuthQueryObject extends AuditQueryObject {
+public class VideoAuthQueryObject extends AuditQueryObject {
 
 }

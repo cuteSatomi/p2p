@@ -12,11 +12,19 @@
         <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
         <result column="email" property="email" jdbcType="VARCHAR"/>
 
-        <association column="income_grade_id" property="incomeGrade" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
-        <association column="marriage_id" property="marriage" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
-        <association column="kid_count_id" property="kidCount" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
-        <association column="education_background_id" property="educationBackground" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
-        <association column="house_condition_id" property="houseCondition" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="income_grade_id" property="incomeGrade"
+                     javaType="com.zzx.p2p.base.domain.SystemDictionaryItem"
+                     select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="marriage_id" property="marriage" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem"
+                     select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="kid_count_id" property="kidCount" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem"
+                     select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="education_background_id" property="educationBackground"
+                     javaType="com.zzx.p2p.base.domain.SystemDictionaryItem"
+                     select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
+        <association column="house_condition_id" property="houseCondition"
+                     javaType="com.zzx.p2p.base.domain.SystemDictionaryItem"
+                     select="com.zzx.p2p.base.mapper.SystemDictionaryItemMapper.selectByPrimaryKey"/>
     </resultMap>
     <insert id="insert">
         insert into `user_info` (id, version, bit_state, score, real_name, email, id_number, phone_number, income_grade_id,
@@ -50,8 +58,14 @@
     </sql>
 
     <select id="selectByPrimaryKey" resultMap="BaseResultMap">
-        select <include refid="base_column"/>
+        select
+        <include refid="base_column"/>
         from `user_info`
         where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="autocomplete" resultType="hashmap">
+        select id, username
+        from login_info where username like concat(#{keyword},'%')
     </select>
 </mapper>
