@@ -15,7 +15,8 @@
     <context:component-scan base-package="com.zzx.p2p"/>
 
     <!-- 引入外部配置文件  -->
-    <context:property-placeholder location="classpath:db.properties,classpath:sms.properties" system-properties-mode="NEVER"/>
+    <context:property-placeholder location="classpath:db.properties,classpath:sms.properties"
+                                  system-properties-mode="NEVER"/>
     <!-- 配置数据库连接池 -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
@@ -63,7 +64,7 @@
 
     <!-- mapper接口的扫描器：这里指定了某个包下的java文件都是mapper。如果是注解方式，它是全路径扫描，但是只认@Mapper-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.zzx.p2p.base.mapper"/>
+        <property name="basePackage" value="com.zzx.p2p.base.mapper,com.zzx.p2p.business.mapper"/>
     </bean>
 
 </beans>

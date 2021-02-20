@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.business.mapper.BidMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.business.domain.Bid">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="actual_rate" property="actualRate" jdbcType="DECIMAL"/>
+        <result column="available_amount" property="availableAmount" jdbcType="DECIMAL"/>
+        <result column="bid_request_id" property="bidRequestId" jdbcType="BIGINT"/>
+        <result column="bid_request_title" property="bidRequestTitle" jdbcType="VARCHAR"/>
+        <result column="bid_time" property="bidTime" jdbcType="TIMESTAMP"/>
+        <association property="bidUser" javaType="com.zzx.p2p.base.domain.LoginInfo" columnPrefix="l_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `bid` (actual_rate, available_amount, bid_request_id, bid_request_title, bid_user_id, bid_time)
+        values (#{actualRate,jdbcType=DECIMAL}, #{availableAmount,jdbcType=DECIMAL}, #{bidRequestId,jdbcType=BIGINT},
+          #{bidRequestTitle,jdbcType=VARCHAR}, #{bidUser.id,jdbcType=BIGINT}, #{bidTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <sql id="base_column">
+        b.id, b.actual_rate, b.available_amount, b.bid_request_id, b.bid_request_title, b.bid_time,
+               l.id as l_id, l.username as l_username
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from `bid` b inner join login_info l on l.id = b.bid_user_id
+        where b.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByBidRequest" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from `bid` b inner join login_info l on l.id = b.bid_user_id
+        where b.bid_request_id = #{bidRequestId}
+    </select>
+</mapper>
