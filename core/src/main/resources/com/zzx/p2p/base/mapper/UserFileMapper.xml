@@ -13,6 +13,16 @@
             <id column="id" property="id"/>
             <result column="username" property="username"/>
         </association>
+        <association property="fileType" javaType="com.zzx.p2p.base.domain.SystemDictionaryItem" columnPrefix="sdi_">
+            <id column="id" property="id"/>
+            <result column="title" property="title"/>
+        </association>
+    </resultMap>
+    <resultMap id="FullResultMap" type="com.zzx.p2p.base.domain.UserFile" extends="BaseResultMap">
+        <association property="auditor" javaType="com.zzx.p2p.base.domain.LoginInfo" columnPrefix="au_">
+            <id column="id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
     </resultMap>
     <resultMap id="UserListResultMap" type="com.zzx.p2p.base.domain.UserFile">
         <id column="id" property="id" jdbcType="BIGINT"/>
@@ -48,9 +58,9 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap">
-        select f.id, f.state, f.remark, f.audit_time, f.apply_time, f.auditor_id, f.score, f.image, f.file_type_id,
-            ap.id as ap_id, ap.username as ap_username
-        from `user_file` f inner join login_info ap on f.applier_id = ap.id
+        select f.id, f.state, f.remark, f.audit_time, f.apply_time, f.auditor_id, f.score, f.image,
+            ap.id as ap_id, ap.username as ap_username, sdi.id as sdi_id, sdi.title as sdi_title
+        from `user_file` f inner join login_info ap on f.applier_id = ap.id left join system_dictionary_item sdi on f.file_type_id = sdi.id
         where f.id = #{id,jdbcType=BIGINT}
     </select>
     <select id="selectAll" resultMap="BaseResultMap">
@@ -61,7 +71,7 @@
 
     <select id="listFilesByHasType" resultMap="UserListResultMap">
         select f.id, f.state, f.remark, f.audit_time, f.apply_time, f.auditor_id, f.score, f.image,
-            sdi.id as sdi_id, sdi.title as sdi_title
+        sdi.id as sdi_id, sdi.title as sdi_title
         from user_file f left join system_dictionary_item sdi on f.file_type_id = sdi.id
         where f.applier_id = #{id}
         <if test="hasType">
@@ -70,5 +80,36 @@
         <if test="!hasType">
             and f.file_type_id is null
         </if>
+    </select>
+
+    <sql id="base_where">
+        <where>
+            <if test="beginDate!=null">
+                and f.apply_time &gt;= #{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and f.apply_time &lt;= #{endDate}
+            </if>
+            <if test="state>-1">
+                and f.state = #{state}
+            </if>
+            and f.file_type_id is not null
+        </where>
+    </sql>
+
+    <select id="queryForCount" resultType="int">
+        select count(f.id)
+        from user_file f
+        <include refid="base_where"/>
+    </select>
+    <select id="query" resultMap="FullResultMap">
+        select f.id, f.state, f.remark, f.audit_time, f.apply_time, f.auditor_id, f.score, f.image,
+        ap.id as ap_id, ap.username as ap_username, au.id as au_id, au.username as au_username,
+        sdi.id as sdi_id, sdi.title as sdi_title
+        from user_file f inner join login_info ap on f.applier_id = ap.id left join login_info au on f.auditor_id =
+        au.id
+        inner join system_dictionary_item sdi on f.file_type_id = sdi.id
+        <include refid="base_where"/>
+        limit #{start}, #{pageSize}
     </select>
 </mapper>

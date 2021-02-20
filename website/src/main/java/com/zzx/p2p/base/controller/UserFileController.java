@@ -37,14 +37,14 @@ public class UserFileController {
 
     @RequestMapping("/userFile")
     public String userFile(Model model) {
-        List<UserFile> userFiles = userFileService.listFilesByHasType(UserContext.getCurrent().getId(),false);
+        List<UserFile> userFiles = userFileService.listFilesByHasType(UserContext.getCurrent().getId(), false);
         // 有没有选择类型的风控资料
-        if (userFiles.size() > 0) {
+        if (userFiles != null && userFiles.size() > 0) {
             model.addAttribute("userFiles", userFiles);
             model.addAttribute("fileTypes", systemDictionaryService.listByParentSn("userFileType"));
             return "userFiles_commit";
         } else {
-            userFiles = userFileService.listFilesByHasType(UserContext.getCurrent().getId(),true);
+            userFiles = userFileService.listFilesByHasType(UserContext.getCurrent().getId(), true);
             model.addAttribute("userFiles", userFiles);
             return "userFiles";
         }

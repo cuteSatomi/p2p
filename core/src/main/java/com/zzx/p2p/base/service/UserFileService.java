@@ -1,6 +1,8 @@
 package com.zzx.p2p.base.service;
 
 import com.zzx.p2p.base.domain.UserFile;
+import com.zzx.p2p.base.query.PageResult;
+import com.zzx.p2p.base.query.UserFileQueryObject;
 
 import java.util.List;
 
@@ -34,4 +36,15 @@ public interface UserFileService {
      * @param ids
      */
     void batchUpdateFileType(Long[] fileTypes, Long[] ids);
+
+    PageResult query(UserFileQueryObject qo);
+
+    /**
+     * 风控材料审核
+     * @param id
+     * @param score
+     * @param remark
+     * @param state
+     */
+    void audit(Long id, int score, String remark, int state);
 }

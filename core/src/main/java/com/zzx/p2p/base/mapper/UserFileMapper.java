@@ -1,6 +1,7 @@
 package com.zzx.p2p.base.mapper;
 
 import com.zzx.p2p.base.domain.UserFile;
+import com.zzx.p2p.base.query.UserFileQueryObject;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -22,4 +23,12 @@ public interface UserFileMapper {
      * @return
      */
     List<UserFile> listFilesByHasType(@Param("id") Long id, @Param("hasType") boolean hasType);
+
+    /**
+     * 分页查询相关
+     * @param qo
+     * @return
+     */
+    int queryForCount(UserFileQueryObject qo);
+    List<UserFile> query(UserFileQueryObject qo);
 }
