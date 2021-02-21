@@ -71,4 +71,9 @@ public class BidConst {
     public static final BigDecimal SMALLEST_BID_AMOUNT = new BigDecimal("50.0000");
     /** 系统规定的最小借款金额 */
     public static final BigDecimal SMALLEST_BID_REQUEST_AMOUNT = new BigDecimal("500.0000");
+
+    /** 系统最小借款利息 */
+    public static final BigDecimal SMALLEST_CURRENT_RATE = new BigDecimal("5.0000");
+    /** 系统最大借款利息 */
+    public static final BigDecimal MAX_CURRENT_RATE = new BigDecimal("20.0000");
 }

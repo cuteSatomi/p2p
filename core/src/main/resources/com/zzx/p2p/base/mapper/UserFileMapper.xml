@@ -93,6 +93,9 @@
             <if test="state>-1">
                 and f.state = #{state}
             </if>
+            <if test="applierId!=null">
+                and f.applier_id = #{applierId}
+            </if>
             and f.file_type_id is not null
         </where>
     </sql>
@@ -110,6 +113,8 @@
         au.id
         inner join system_dictionary_item sdi on f.file_type_id = sdi.id
         <include refid="base_where"/>
-        limit #{start}, #{pageSize}
+        <if test="pageSize>0">
+            limit #{start}, #{pageSize}
+        </if>
     </select>
 </mapper>

@@ -61,6 +61,11 @@ public class UserInfo extends BaseDomain {
         return BitStatesUtils.hasState(this.bitState, BitStatesUtils.OP_VIDEO_AUTH);
     }
 
+    /** 判断用户是否有一个借款正在处理流程之中 */
+    public boolean getIsBidRequestProcess() {
+        return BitStatesUtils.hasState(this.bitState, BitStatesUtils.OP_HAS_BID_REQUEST_PROCESS);
+    }
+
     /** 添加绑定的状态码 */
     public void addState(Long state) {
         bitState = BitStatesUtils.addState(bitState, state);

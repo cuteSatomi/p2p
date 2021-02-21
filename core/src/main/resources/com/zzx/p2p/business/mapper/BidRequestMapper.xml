@@ -67,12 +67,39 @@
           publish_time = #{publishTime,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=BIGINT} and version = #{version}
     </update>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
-        select b.id, b.version, b.return_type, b.bid_request_type, b.bid_request_state, b.bid_request_amount,
+
+    <sql id="base_column">
+        b.id, b.version, b.return_type, b.bid_request_type, b.bid_request_state, b.bid_request_amount,
         b.current_rate, b.min_bid_amount, b.months2_return, b.bid_count, b.total_reward_amount, b.current_sum,
         b.title, b.description, b.note, b.disable_date, b.disable_days, b.create_user_id, b.apply_time,
         b.publish_time, l.id as l_id, l.username as l_username
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
         from `bid_request` b inner join login_info l on b.create_user_id = l.id
         where b.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <sql id="base_where">
+        <where>
+            <if test="bidRequestState>-1">
+                and b.bid_request_state = #{bidRequestState}
+            </if>
+        </where>
+    </sql>
+
+    <select id="queryForCount" resultType="int">
+        select count(b.id)
+        from bid_request b
+        <include refid="base_where"/>
+    </select>
+    <select id="query" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from bid_request b inner join login_info l on b.create_user_id = l.id
+        <include refid="base_where"/>
+        limit #{start},#{pageSize}
     </select>
 </mapper>

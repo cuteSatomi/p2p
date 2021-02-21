@@ -64,7 +64,7 @@
                         申请贷款
                     </a>
                 <#else>
-                    <a href="#" class="el-borrow-apply">
+                    <a href="#" class="el-borrow-apply" disabled="true">
                         申请贷款
                     </a>
                 </#if>

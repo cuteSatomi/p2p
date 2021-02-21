@@ -25,9 +25,9 @@
 			<li class="realAuth"><a href="/realAuth.do">实名认证审核</a></li>
 			<li class="videoAuth"><a href="/videoAuth.do">视频认证审核</a></li>
 			<li class="userFileAuth"><a href="/userFileAuth.do">认证材料审核</a></li>
-			<li class="bidrequest_publishaudit_list"><a href="/bidrequest_publishaudit_list.do">发标前审核</a></li>
-			<li class="bidrequest_audit1_list"><a href="/bidrequest_audit1_list.do">满标一审</a></li>
-			<li class="bidrequest_audit2_list"><a href="/bidrequest_audit2_list.do">满标二审</a></li>
+			<li class="bidRequest_publishAudit_list"><a href="/bidRequest_publishAudit_list.do">发标前审核</a></li>
+			<li class="bidRequest_audit1_list"><a href="/bidRequest_audit1_list.do">满标一审</a></li>
+			<li class="bidRequest_audit2_list"><a href="/bidRequest_audit2_list.do">满标二审</a></li>
 			<li class="rechargeOffline"><a href="/rechargeOffline.do">线下充值审核</a></li>
 			<li class="moneyWithdraw"><a href="/moneyWithdraw.do">提现审核</a></li>
 		</ul>

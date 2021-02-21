@@ -66,6 +66,11 @@ public class UserFileServiceImpl implements UserFileService {
     }
 
     @Override
+    public List<UserFile> queryForList(UserFileQueryObject qo) {
+        return userFileMapper.query(qo);
+    }
+
+    @Override
     public void audit(Long id, int score, String remark, int state) {
         // 查询出UserFile
         UserFile userFile = userFileMapper.selectByPrimaryKey(id);

@@ -39,8 +39,11 @@ public interface UserFileService {
 
     PageResult query(UserFileQueryObject qo);
 
+    List<UserFile> queryForList(UserFileQueryObject qo);
+
     /**
      * 风控材料审核
+     *
      * @param id
      * @param score
      * @param remark

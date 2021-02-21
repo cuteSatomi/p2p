@@ -16,8 +16,8 @@ public class BitStatesUtils {
     public final static Long OP_REAL_AUTH = 1L << 3;
     /** 用户视频认证状态码 */
     public final static Long OP_VIDEO_AUTH = 1L << 4;
-    /** 用户是否是vip状态码 */
-    public final static Long OP_VIP = 1L << 5;
+    /** 用户是否有一个借款正在处理流程之中 */
+    public final static Long OP_HAS_BID_REQUEST_PROCESS = 1L << 5;
 
     /**
      * @param states 所有状态值
