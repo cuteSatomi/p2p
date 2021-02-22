@@ -87,6 +87,12 @@
             <if test="bidRequestState>-1">
                 and b.bid_request_state = #{bidRequestState}
             </if>
+            <if test="bidRequestStates!=null">
+                and b.bid_request_state in
+                <foreach collection="bidRequestStates" item="state" open="(" close=")" separator=",">
+                    #{state}
+                </foreach>
+            </if>
         </where>
     </sql>
 
@@ -100,6 +106,11 @@
         <include refid="base_column"/>
         from bid_request b inner join login_info l on b.create_user_id = l.id
         <include refid="base_where"/>
-        limit #{start},#{pageSize}
+        <if test="orderBy!=null">
+            order by ${orderBy} ${orderType}
+        </if>
+        <if test="pageSize>0">
+            limit #{start},#{pageSize}
+        </if>
     </select>
 </mapper>

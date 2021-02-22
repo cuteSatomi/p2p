@@ -160,4 +160,17 @@ public class BidRequestServiceImpl implements BidRequestService {
     public List<BidRequestAuditHistory> listAuditHistoryByBidRequest(Long id) {
         return bidRequestAuditHistoryMapper.listByBidRequest(id);
     }
+
+    @Override
+    public List<BidRequest> listIndex(int size) {
+        BidRequestQueryObject qo = new BidRequestQueryObject();
+        qo.setBidRequestStates(new int[]{BidConst.BID_REQUEST_STATE_BIDDING,
+                BidConst.BID_REQUEST_STATE_PAYING_BACK,
+                BidConst.BID_REQUEST_STATE_COMPLETE_PAY_BACK});
+        qo.setPageSize(size);
+        qo.setCurrentPage(1);
+        qo.setOrderBy("bid_request_state");
+        qo.setOrderType("asc");
+        return bidRequestMapper.query(qo);
+    }
 }

@@ -50,4 +50,10 @@ public interface BidRequestService {
      * @return
      */
     List<BidRequestAuditHistory> listAuditHistoryByBidRequest(Long id);
+
+    /**
+     * 查询首页需要展示的数据
+     * @return
+     */
+    List<BidRequest> listIndex(int size);
 }
