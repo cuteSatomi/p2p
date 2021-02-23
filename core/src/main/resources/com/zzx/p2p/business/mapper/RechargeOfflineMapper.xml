@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.business.mapper.RechargeOfflineMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.business.domain.RechargeOffline">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="state" property="state" jdbcType="TINYINT"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP"/>
+        <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP"/>
+        <result column="trade_code" property="tradeCode" jdbcType="VARCHAR"/>
+        <result column="trade_time" property="tradeTime" jdbcType="TIMESTAMP"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="note" property="note" jdbcType="VARCHAR"/>
+        <association property="applier" javaType="com.zzx.p2p.base.domain.LoginInfo" columnPrefix="ap_">
+            <id property="id" column="id"/>
+            <result property="username" column="username"/>
+        </association>
+        <association property="auditor" javaType="com.zzx.p2p.base.domain.LoginInfo" columnPrefix="au_">
+            <id property="id" column="id"/>
+            <result property="username" column="username"/>
+        </association>
+        <association property="bankInfo" javaType="com.zzx.p2p.business.domain.PlatformBankInfo" columnPrefix="b_"
+                     resultMap="com.zzx.p2p.business.mapper.PlatformBankInfoMapper.BaseResultMap"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `recharge_offline` (state, remark, audit_time,
+          apply_time, auditor_id, applier_id,
+          trade_code, trade_time, amount,
+          note, bank_info_id)
+        values (#{state,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, #{auditTime,jdbcType=TIMESTAMP},
+          #{applyTime,jdbcType=TIMESTAMP}, #{auditor.id,jdbcType=BIGINT}, #{applier.id,jdbcType=BIGINT},
+          #{tradeCode,jdbcType=VARCHAR}, #{tradeTime,jdbcType=TIMESTAMP}, #{amount,jdbcType=DECIMAL},
+          #{note,jdbcType=VARCHAR}, #{bankInfo.id,jdbcType=BIGINT})
+    </insert>
+    <update id="updateByPrimaryKey">
+        update `recharge_offline`
+        set state = #{state,jdbcType=TINYINT},
+          remark = #{remark,jdbcType=VARCHAR},
+          audit_time = #{auditTime,jdbcType=TIMESTAMP},
+          apply_time = #{applyTime,jdbcType=TIMESTAMP},
+          auditor_id = #{auditor.id,jdbcType=BIGINT},
+          applier_id = #{applier.id,jdbcType=BIGINT},
+          trade_code = #{tradeCode,jdbcType=VARCHAR},
+          trade_time = #{tradeTime,jdbcType=TIMESTAMP},
+          amount = #{amount,jdbcType=DECIMAL},
+          note = #{note,jdbcType=VARCHAR},
+          bank_info_id = #{bankInfo.id,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <sql id="base_column">
+        r.id, r.state, r.remark, r.audit_time, r.apply_time, r.trade_code, r.trade_time, r.amount, r.note,
+            ap.id as ap_id, ap.username as ap_username, au.id as au_id, au.username as au_username,
+            b.id as b_id, b.bank_name as b_bank_name, b.account_name as b_account_name,
+            b.account_number as b_account_number, b.bank_fork_name as b_bank_fork_name
+    </sql>
+
+    <sql id="base_table">
+        `recharge_offline` r
+        inner join login_info ap on r.applier_id = ap.id
+        left join login_info au on r.auditor_id = au.id
+        inner join platform_bank_info b on r.bank_info_id = b.id
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+        where r.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <sql id="base_where">
+        <where>
+            <if test="applierId!=null">
+                and r.applier_id = #{applierId}
+            </if>
+            <if test="beginDate!=null">
+                and r.apply_time &gt;= #{beginDate}
+            </if>
+            <if test="endDate!=null">
+                and r.apply_time &lt;= #{endDate}
+            </if>
+            <if test="state>-1">
+                and r.state = #{state}
+            </if>
+        </where>
+    </sql>
+
+    <select id="queryForCount" resultType="int">
+        select count(r.id)
+        from
+        <include refid="base_table"/>
+        <include refid="base_where"/>
+    </select>
+    <select id="query" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from
+        <include refid="base_table"/>
+        <include refid="base_where"/>
+        limit #{start}, #{pageSize}
+    </select>
+</mapper>

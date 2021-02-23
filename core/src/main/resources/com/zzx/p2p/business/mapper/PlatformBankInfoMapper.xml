@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.business.mapper.PlatformBankInfoMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.business.domain.PlatformBankInfo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="bank_name" property="bankName" jdbcType="VARCHAR"/>
+        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="account_number" property="accountNumber" jdbcType="VARCHAR"/>
+        <result column="bank_fork_name" property="bankForkName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey">
+        delete from `platform_bank_info`
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `platform_bank_info` (bank_name, account_name, account_number, bank_fork_name)
+        values (#{bankName,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, #{accountNumber,jdbcType=VARCHAR},
+          #{bankForkName,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateByPrimaryKey">
+        update `platform_bank_info`
+        set bank_name = #{bankName,jdbcType=VARCHAR},
+          account_name = #{accountName,jdbcType=VARCHAR},
+          account_number = #{accountNumber,jdbcType=VARCHAR},
+          bank_fork_name = #{bankForkName,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <sql id="base_column">
+        id, bank_name, account_name, account_number, bank_fork_name
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from `platform_bank_info`
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from `platform_bank_info`
+    </select>
+
+    <select id="queryForCount" resultType="int">
+        select count(id)
+        from `platform_bank_info`
+    </select>
+    <select id="query" resultMap="BaseResultMap">
+        select
+        <include refid="base_column"/>
+        from `platform_bank_info`
+        limit #{start},#{pageSize}
+    </select>
+</mapper>

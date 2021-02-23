@@ -24,8 +24,8 @@
 
         <!-- 必须要有的，使用这个配置链接数据库 @TODO:是否可以扩展 -->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql:///p2p?nullCatalogMeansCurrent=true" userId="root" password="123">
-            <!--                        connectionURL="jdbc:mysql:///p2p?serverTimezone=GMT%2B8" userId="root" password="123">-->
+                        connectionURL="jdbc:mysql:///p2p?serverTimezone=GMT%2B8" userId="root" password="123">
+<!--        connectionURL="jdbc:mysql:///p2p?nullCatalogMeansCurrent=true" userId="root" password="123">-->
             <!-- 这里面可以设置property属性，每一个property属性都设置到配置的Driver上 -->
         </jdbcConnection>
 
@@ -64,7 +64,7 @@
                 value=""/> -->
         </javaClientGenerator>
 
-        <table tableName="bid_request_audit_history" delimitIdentifiers="true">
+        <table tableName="recharge_offline" delimitIdentifiers="true">
             <!-- 参考 javaModelGenerator 的 constructorBased属性 -->
             <property name="constructorBased" value="false"/>
             <generatedKey column="id" sqlStatement="JDBC"/>
