@@ -13,9 +13,19 @@ import com.zzx.p2p.business.query.RechargeOfflineQueryObject;
 public interface RechargeOfflineService {
     /**
      * 提交线下充值单申请
+     *
      * @param recharge
      */
     void apply(RechargeOffline recharge);
 
     PageResult query(RechargeOfflineQueryObject qo);
+
+    /**
+     * 线下充值审核
+     *
+     * @param id
+     * @param remark
+     * @param state
+     */
+    void audit(Long id, String remark, int state);
 }

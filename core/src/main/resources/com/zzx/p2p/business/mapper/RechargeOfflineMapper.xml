@@ -76,13 +76,19 @@
                 and r.applier_id = #{applierId}
             </if>
             <if test="beginDate!=null">
-                and r.apply_time &gt;= #{beginDate}
+                and r.trade_time &gt;= #{beginDate}
             </if>
             <if test="endDate!=null">
-                and r.apply_time &lt;= #{endDate}
+                and r.trade_time &lt;= #{endDate}
             </if>
             <if test="state>-1">
                 and r.state = #{state}
+            </if>
+            <if test="bankInfoId!=null">
+                and r.bank_info_id = #{bankInfoId}
+            </if>
+            <if test="tradeCode!=null">
+                and r.trade_code = #{tradeCode}
             </if>
         </where>
     </sql>

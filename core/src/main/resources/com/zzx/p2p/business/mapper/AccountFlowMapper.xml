@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.business.mapper.AccountFlowMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.business.domain.AccountFlow">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="account_type" property="accountType" jdbcType="TINYINT"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="note" property="note" jdbcType="VARCHAR"/>
+        <result column="usable_amount" property="usableAmount" jdbcType="DECIMAL"/>
+        <result column="frozen_amount" property="frozenAmount" jdbcType="DECIMAL"/>
+        <result column="trade_time" property="tradeTime" jdbcType="TIMESTAMP"/>
+        <result column="account_id" property="accountId" jdbcType="BIGINT"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `account_flow` (account_type, amount, note,
+          usable_amount, frozen_amount, trade_time,
+          account_id)
+        values (#{accountType,jdbcType=TINYINT}, #{amount,jdbcType=DECIMAL}, #{note,jdbcType=VARCHAR},
+          #{usableAmount,jdbcType=DECIMAL}, #{frozenAmount,jdbcType=DECIMAL}, #{tradeTime,jdbcType=TIMESTAMP},
+          #{accountId,jdbcType=BIGINT})
+    </insert>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id, account_type, amount, note, usable_amount, frozen_amount, trade_time,
+        account_id
+        from `account_flow`
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+</mapper>

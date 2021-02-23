@@ -76,4 +76,56 @@ public class BidConst {
     public static final BigDecimal SMALLEST_CURRENT_RATE = new BigDecimal("5.0000");
     /** 系统最大借款利息 */
     public static final BigDecimal MAX_CURRENT_RATE = new BigDecimal("20.0000");
+
+    /* =============================账户流水类型================================ */
+    /** 资金流水类别：线下充值 (可用余额增加) */
+    public final static int ACCOUNT_ACTION_TYPE_RECHARGE_OFFLINE = 0;
+    /** 资金流水类别：提现成功 (冻结金额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_WITHDRAW = 1;
+    /** 资金流水类别：成功借款 (可用余额增加) */
+    public final static int ACCOUNT_ACTION_TYPE_BIDREQUEST_SUCCESSFUL = 2;
+    /** 资金流水类别：成功投标 (冻结金额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_BID_SUCCESSFUL = 3;
+    /** 资金流水类别：还款 (可用余额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_RETURN_MONEY = 4;
+    /** 资金流水类别：回款 (可用余额增加) */
+    public final static int ACCOUNT_ACTION_TYPE_CALLBACK_MONEY = 5;
+    /** 资金流水类别：支付平台管理费 (可用余额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_CHARGE = 6;
+    /** 资金流水类别：利息管理费 (可用余额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_INTEREST_SHARE = 7;
+    /** 资金流水类别：提现手续费 (可用余额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_WITHDRAW_MANAGE_CHARGE = 8;
+    /** 资金流水类别：充值手续费 (可用余额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_RECHARGE_CHARGE = 9;
+    /** 资金流水类别：投标冻结金额 (冻结金额增加, 可用余额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_BID_FREEZED = 10;
+    /** 资金流水类别：取消投标冻结金额 (标审核失败, 冻结金额减少, 可用余额增加) */
+    public final static int ACCOUNT_ACTION_TYPE_BID_UNFREEZED = 11;
+    /** 资金流水类别：提现申请冻结金额 (冻结金额增加, 可用余额减少) */
+    public final static int ACCOUNT_ACTION_TYPE_WITHDRAW_FREEZED = 12;
+    /** 资金流水类别:提现申请失败取消冻结金额 (冻结金额减少, 可用余额增加) */
+    public final static int ACCOUNT_ACTION_TYPE_WITHDRAW_UNFREEZED = 13;
+
+    /* ============系统账户流水类型============= */
+    /** 系统账户收到账户管理费（借款管理费） */
+    public final static int SYSTEM_ACCOUNT_ACTIONTYPE_MANAGE_CHARGE = 1;
+    /** 系统账户收到利息管理费 */
+    public final static int SYSTEM_ACCOUNT_ACTIONTYPE_INTREST_MANAGE_CHARGE = 2;
+    /** 系统账户收到提现手续费 */
+    public final static int SYSTEM_ACCOUNT_ACTIONTYPE_WITHDRAW_MANAGE_CHARGE = 3;
+
+    /* =========还款状态=============== */
+    /** 正常待还 */
+    public final static int PAYMENT_STATE_NORMAL = 0;
+    /** 已还 */
+    public final static int PAYMENT_STATE_DONE = 1;
+    /** 逾期 */
+    public final static int PAYMENT_STATE_OVERDUE = 2;
+
+    /**
+     * 存储图片的公共文件夹地址
+     */
+    public final static String PUBLIC_IMG_PATH = "D:/www/upload";
+
 }

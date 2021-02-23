@@ -1,5 +1,6 @@
 package com.zzx.p2p.business.domain;
 
+import com.alibaba.fastjson.JSONObject;
 import com.zzx.p2p.base.domain.BaseAuditDomain;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 线下充值单
@@ -30,5 +33,20 @@ public class RechargeOffline extends BaseAuditDomain {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     public void setTradeTime(Date tradeTime) {
         this.tradeTime = tradeTime;
+    }
+
+    /**
+     * 返回当前的json字符串
+     *
+     * @return
+     */
+    public String getJsonString() {
+        Map<String, Object> json = new HashMap<String, Object>(8);
+        json.put("id", id);
+        json.put("username", applier.getUsername());
+        json.put("tradeCode", tradeCode);
+        json.put("amount", amount);
+        json.put("tradeTime", tradeTime);
+        return JSONObject.toJSONString(json);
     }
 }
