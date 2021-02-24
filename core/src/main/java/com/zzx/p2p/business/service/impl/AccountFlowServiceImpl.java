@@ -3,6 +3,7 @@ package com.zzx.p2p.business.service.impl;
 import com.zzx.p2p.base.domain.Account;
 import com.zzx.p2p.base.util.BidConst;
 import com.zzx.p2p.business.domain.AccountFlow;
+import com.zzx.p2p.business.domain.Bid;
 import com.zzx.p2p.business.domain.RechargeOffline;
 import com.zzx.p2p.business.mapper.AccountFlowMapper;
 import com.zzx.p2p.business.service.AccountFlowService;
@@ -20,16 +21,41 @@ public class AccountFlowServiceImpl implements AccountFlowService {
     @Autowired
     private AccountFlowMapper accountFlowMapper;
 
-    @Override
-    public void rechargeFlow(RechargeOffline r, Account account) {
+    private AccountFlow createBaseFlow(Account account) {
         AccountFlow flow = new AccountFlow();
         flow.setAccountId(account.getId());
-        flow.setAccountType(BidConst.ACCOUNT_ACTION_TYPE_RECHARGE_OFFLINE);
-        flow.setAmount(r.getAmount());
-        flow.setFrozenAmount(account.getFrozenAmount());
-        flow.setNote("线下充值成功，充值金额为：" + r.getAmount());
         flow.setTradeTime(new Date());
         flow.setUsableAmount(account.getUsableAmount());
+        flow.setFrozenAmount(account.getFrozenAmount());
+        return flow;
+    }
+
+    @Override
+    public void rechargeFlow(RechargeOffline r, Account account) {
+        AccountFlow flow = createBaseFlow(account);
+        flow.setAccountType(BidConst.ACCOUNT_ACTION_TYPE_RECHARGE_OFFLINE);
+        flow.setAmount(r.getAmount());
+        flow.setNote("线下充值成功，充值金额为：" + r.getAmount());
+
+        accountFlowMapper.insert(flow);
+    }
+
+    @Override
+    public void bid(Bid bid, Account account) {
+        AccountFlow flow = createBaseFlow(account);
+        flow.setAccountType(BidConst.ACCOUNT_ACTION_TYPE_BID_FREEZED);
+        flow.setAmount(bid.getAvailableAmount());
+        flow.setNote("投标:" + bid.getBidRequestTitle() + "，冻结账户余额：" + bid.getAvailableAmount());
+
+        accountFlowMapper.insert(flow);
+    }
+
+    @Override
+    public void returnMoney(Bid bid, Account bidAccount) {
+        AccountFlow flow = createBaseFlow(bidAccount);
+        flow.setAccountType(BidConst.ACCOUNT_ACTION_TYPE_BID_UNFREEZED);
+        flow.setAmount(bid.getAvailableAmount());
+        flow.setNote("投标:" + bid.getBidRequestTitle() + "，满审拒绝退款：" + bid.getAvailableAmount());
 
         accountFlowMapper.insert(flow);
     }

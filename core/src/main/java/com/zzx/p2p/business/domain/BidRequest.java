@@ -78,7 +78,7 @@ public class BidRequest extends BaseDomain {
      * @return
      */
     public BigDecimal getPercent() {
-        return currentSum.divide(bidRequestAmount, DISPLAY_SCALE, RoundingMode.HALF_UP);
+        return currentSum.divide(bidRequestAmount, DISPLAY_SCALE, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
     }
 
     public String getBidRequestStateDisplay() {

@@ -37,7 +37,7 @@
                 $("#myModal [name=title]").html(data.title);
                 $("#myModal [name=bidRequestAmount]").html(data.bidRequestAmount);
                 $("#myModal [name=currentRate]").html(data.currentRate);
-                $("#myModal [name=monthes2Return]").html(data.monthes2Return);
+                $("#myModal [name=months2Return]").html(data.months2Return);
                 $("#myModal [name=totalRewardAmount]").html(data.totalRewardAmount);
             });
 
@@ -69,7 +69,7 @@
             <div class="page-header">
                 <h3>满标一审管理</h3>
             </div>
-            <form id="searchForm" class="form-inline" method="post" action="/bidrequest_audit1_list.do">
+            <form id="searchForm" class="form-inline" method="post" action="/bidRequest_audit1_list.do">
                 <input type="hidden" id="currentPage" name="currentPage" value=""/>
             </form>
             <div class="panel panel-default">
@@ -97,7 +97,7 @@
                             <td>${data.createUser.username}</td>
                             <td>${(data.publishTime?string("yyyy-MM-dd HH:mm:SS"))!'未发布'}</td>
                             <td>${data.bidRequestAmount}</td>
-                            <td>${data.monthes2Return}月</td>
+                            <td>${data.months2Return}月</td>
                             <td>${data.currentRate}%</td>
                             <td>${data.totalRewardAmount}</td>
                             <td>${data.bidRequestStateDisplay}</td>
@@ -118,7 +118,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-body">
-                    <form class="form-horizontal" id="editform" method="post" action="/bidrequest_audit1.do">
+                    <form class="form-horizontal" id="editform" method="post" action="/bidRequest_audit1.do">
                         <fieldset>
                             <div id="legend" class="">
                                 <legend>满标一审</legend>
@@ -144,9 +144,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-2 control-label" for="monthes2Return">期限</label>
+                                <label class="col-sm-2 control-label" for="months2Return">期限</label>
                                 <div class="col-sm-6">
-                                    <label class="form-control" name="monthes2Return"></label>
+                                    <label class="form-control" name="months2Return"></label>
                                 </div>
                             </div>
                             <div class="form-group">

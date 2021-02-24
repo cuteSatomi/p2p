@@ -8,19 +8,25 @@ import com.zzx.p2p.base.service.UserInfoService;
 import com.zzx.p2p.base.util.BidConst;
 import com.zzx.p2p.base.util.BitStatesUtils;
 import com.zzx.p2p.base.util.UserContext;
+import com.zzx.p2p.business.domain.Bid;
 import com.zzx.p2p.business.domain.BidRequest;
 import com.zzx.p2p.business.domain.BidRequestAuditHistory;
+import com.zzx.p2p.business.mapper.BidMapper;
 import com.zzx.p2p.business.mapper.BidRequestAuditHistoryMapper;
 import com.zzx.p2p.business.mapper.BidRequestMapper;
 import com.zzx.p2p.business.query.BidRequestQueryObject;
+import com.zzx.p2p.business.service.AccountFlowService;
 import com.zzx.p2p.business.service.BidRequestService;
 import com.zzx.p2p.business.util.CalculatetUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zzx
@@ -32,10 +38,16 @@ public class BidRequestServiceImpl implements BidRequestService {
     private BidRequestMapper bidRequestMapper;
 
     @Autowired
+    private BidMapper bidMapper;
+
+    @Autowired
     private UserInfoService userInfoService;
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private AccountFlowService accountFlowService;
 
     @Autowired
     private BidRequestAuditHistoryMapper bidRequestAuditHistoryMapper;
@@ -172,5 +184,117 @@ public class BidRequestServiceImpl implements BidRequestService {
         qo.setOrderBy("bid_request_state");
         qo.setOrderType("asc");
         return bidRequestMapper.query(qo);
+    }
+
+    @Override
+    public void bid(Long bidRequestId, BigDecimal amount) {
+        // 一些参数检查
+        BidRequest br = get(bidRequestId);
+        Account currentAccount = accountService.get(UserContext.getCurrent().getId());
+        if (    // 借款存在
+                br != null
+                        // 借款状态为招标中
+                        && br.getBidRequestState() == BidConst.BID_REQUEST_STATE_BIDDING
+                        // 当前用户不是借款人
+                        && !br.getCreateUser().getId().equals(UserContext.getCurrent().getId())
+                        // 当前用户账户余额 > 投标金额
+                        && currentAccount.getUsableAmount().compareTo(amount) >= 0
+                        // 投标金额 >= 最小投标金额
+                        && amount.compareTo(br.getMinBidAmount()) >= 0
+                        // 投标金额 <= 借款剩余投标金额
+                        && amount.compareTo(br.getRemainAmount()) <= 0) {
+
+            // 执行投标
+            // 创建一个投标对象，设置相关属性
+            Bid bid = new Bid();
+            bid.setActualRate(br.getCurrentRate());
+            bid.setAvailableAmount(amount);
+            bid.setBidRequestId(br.getId());
+            bid.setBidRequestTitle(br.getTitle());
+            bid.setBidTime(new Date());
+            bid.setBidUser(UserContext.getCurrent());
+            bidMapper.insert(bid);
+
+            // 得到投标人账户，修改账户信息
+            currentAccount.setUsableAmount(currentAccount.getUsableAmount().subtract(amount));
+            currentAccount.setFrozenAmount(currentAccount.getFrozenAmount().add(amount));
+            // 生成一条投标流水
+            accountFlowService.bid(bid, currentAccount);
+            // 修改借款相关信息
+            br.setBidCount(br.getBidCount() + 1);
+            br.setCurrentSum(br.getCurrentSum().add(amount));
+            // 判断当前标是否投满，
+            if (br.getBidRequestAmount().equals(br.getCurrentSum())) {
+                // 修改标的状态
+                br.setBidRequestState(BidConst.BID_REQUEST_STATE_APPROVE_PENDING_1);
+            }
+
+            accountService.update(currentAccount);
+            update(br);
+        }
+    }
+
+    @Override
+    public void fullAudit1(Long id, int state, String remark) {
+        // 得到借款对象
+        BidRequest br = get(id);
+        if (br != null && br.getBidRequestState() == BidConst.BID_REQUEST_STATE_APPROVE_PENDING_1) {
+            // 创建一个借款审核流程对象
+            BidRequestAuditHistory history = new BidRequestAuditHistory();
+            history.setApplier(br.getCreateUser());
+            history.setApplyTime(new Date());
+            history.setAuditor(UserContext.getCurrent());
+            history.setAuditTime(new Date());
+            history.setBidRequestId(br.getId());
+            history.setRemark(remark);
+            history.setState(state);
+            history.setAuditType(BidRequestAuditHistory.FULL_AUDIT_1);
+            bidRequestAuditHistoryMapper.insert(history);
+
+            // 判断审核状态
+            if (state == BidRequestAuditHistory.STATE_AUDIT) {
+                // 审核通过则将状态修改为满标二审
+                br.setBidRequestState(BidConst.BID_REQUEST_STATE_APPROVE_PENDING_2);
+            } else {
+                // 审核不通过
+                // 修改借款状态
+                br.setBidRequestState(BidConst.BID_REQUEST_STATE_REJECTED);
+                // 退钱
+                returnMoney(br);
+                // 移除借款人借款的状态码
+                UserInfo borrowUser = userInfoService.get(br.getCreateUser().getId());
+                borrowUser.removeState(BitStatesUtils.OP_HAS_BID_REQUEST_PROCESS);
+                userInfoService.update(borrowUser);
+            }
+            update(br);
+        }
+    }
+
+    /**
+     * 满标审核被拒绝，将投标人的钱退回
+     *
+     * @param br
+     */
+    private void returnMoney(BidRequest br) {
+        Map<Long, Account> updates = new HashMap<Long, Account>();
+        // 遍历投标列表
+        for (Bid bid : br.getBids()) {
+            // 针对每一个bid进行退款
+            // 找到投标人对应的账户
+            Long accountId = bid.getBidUser().getId();
+            Account bidAccount = updates.get(accountId);
+            if (bidAccount == null) {
+                bidAccount = accountService.get(bid.getBidUser().getId());
+                updates.put(accountId, bidAccount);
+            }
+            // 账户可用余额增加，冻结金额减少
+            bidAccount.setUsableAmount(bidAccount.getUsableAmount().add(bid.getAvailableAmount()));
+            bidAccount.setFrozenAmount(bidAccount.getFrozenAmount().subtract(bid.getAvailableAmount()));
+            // 生成退款流水
+            accountFlowService.returnMoney(bid, bidAccount);
+        }
+        for (Account account : updates.values()) {
+            accountService.update(account);
+        }
     }
 }

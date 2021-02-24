@@ -59,6 +59,36 @@ public class BidRequestController {
         return new JSONResult();
     }
 
+    /**
+     * 查询满标1审的列表
+     *
+     * @param qo
+     * @param model
+     * @return
+     */
+    @RequestMapping("/bidRequest_audit1_list")
+    public String bidRequestFullAudit1List(@ModelAttribute("qo") BidRequestQueryObject qo, Model model) {
+        // 这个页面只能查询待发布状态
+        qo.setBidRequestState(BidConst.BID_REQUEST_STATE_APPROVE_PENDING_1);
+        model.addAttribute("pageResult", bidRequestService.query(qo));
+        return "bidrequest/audit1";
+    }
+
+    /**
+     * 满标一审审核
+     *
+     * @param id
+     * @param state
+     * @param remark
+     * @return
+     */
+    @RequestMapping("/bidRequest_audit1")
+    @ResponseBody
+    public JSONResult bidRequestAudit1(Long id, int state, String remark) {
+        bidRequestService.fullAudit1(id, state, remark);
+        return new JSONResult();
+    }
+
     @RequestMapping("/borrow_info")
     public String borrowInfoDetail(Long id, Model model) {
         BidRequest bidRequest = bidRequestService.get(id);
