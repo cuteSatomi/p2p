@@ -17,12 +17,15 @@ import com.zzx.p2p.business.mapper.BidRequestMapper;
 import com.zzx.p2p.business.query.BidRequestQueryObject;
 import com.zzx.p2p.business.service.AccountFlowService;
 import com.zzx.p2p.business.service.BidRequestService;
+import com.zzx.p2p.business.service.SystemAccountService;
 import com.zzx.p2p.business.util.CalculatetUtil;
+import com.zzx.p2p.business.util.DecimalFormatUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +54,9 @@ public class BidRequestServiceImpl implements BidRequestService {
 
     @Autowired
     private BidRequestAuditHistoryMapper bidRequestAuditHistoryMapper;
+
+    @Autowired
+    private SystemAccountService systemAccountService;
 
     @Override
     public void update(BidRequest bidRequest) {
@@ -262,6 +268,105 @@ public class BidRequestServiceImpl implements BidRequestService {
                 // 退钱
                 returnMoney(br);
                 // 移除借款人借款的状态码
+                UserInfo borrowUser = userInfoService.get(br.getCreateUser().getId());
+                borrowUser.removeState(BitStatesUtils.OP_HAS_BID_REQUEST_PROCESS);
+                userInfoService.update(borrowUser);
+            }
+            update(br);
+        }
+    }
+
+    @Override
+    public void fullAudit2(Long id, int state, String remark) {
+        // 得到借款对象，判断状态
+        BidRequest br = get(id);
+        if (br != null && br.getBidRequestState() == BidConst.BID_REQUEST_STATE_APPROVE_PENDING_2) {
+            // 创建一个借款的审核流程对象，并设置相关参数
+            BidRequestAuditHistory history = new BidRequestAuditHistory();
+            history.setApplier(br.getCreateUser());
+            history.setApplyTime(new Date());
+            history.setAuditor(UserContext.getCurrent());
+            history.setAuditTime(new Date());
+            history.setBidRequestId(br.getId());
+            history.setRemark(remark);
+            history.setState(state);
+            history.setAuditType(BidRequestAuditHistory.FULL_AUDIT_2);
+            bidRequestAuditHistoryMapper.insert(history);
+
+            if (state == BidRequestAuditHistory.STATE_AUDIT) {
+                // 审核通过
+                // 修改借款状态为还款中
+                br.setBidRequestState(BidConst.BID_REQUEST_STATE_PAYING_BACK);
+
+                // 借款人
+                // 查出借款人账户
+                Account borrowAccount = accountService.get(br.getCreateUser().getId());
+                // 借款人账户余额增加
+                borrowAccount.setUsableAmount(borrowAccount.getUsableAmount().add(br.getBidRequestAmount()));
+                // 生成收款流水
+                accountFlowService.borrowSuccess(br, borrowAccount);
+                // 修改待还本息
+                borrowAccount.setUnReturnAmount(borrowAccount.getUnReturnAmount()
+                        .add(br.getTotalRewardAmount())
+                        .add(br.getTotalRewardAmount()));
+                // 修改可用信用额度
+                borrowAccount.setRemainBorrowLimit(borrowAccount.getRemainBorrowLimit().subtract(br.getBidRequestAmount()));
+                // 移除借款人借款进行中的状态码
+                UserInfo borrowUser = userInfoService.get(br.getCreateUser().getId());
+                borrowUser.removeState(BitStatesUtils.OP_HAS_BID_REQUEST_PROCESS);
+                userInfoService.update(borrowUser);
+                // 支付借款手续费
+                BigDecimal manageChargeFee = CalculatetUtil.calAccountManagementCharge(br.getBidRequestAmount());
+                // 可用余额减少
+                borrowAccount.setUsableAmount(borrowAccount.getUsableAmount().subtract(manageChargeFee));
+                // 生成支付借款手续费流水
+                accountFlowService.borrowChargeFee(manageChargeFee, br, borrowAccount);
+                // 平台收取借款手续费
+                systemAccountService.chargeBorrowFee(br, manageChargeFee);
+
+                // 投资人
+                Map<Long, Account> updates = new HashMap<Long, Account>();
+                BigDecimal totalBidInterest = BidConst.ZERO;
+                // 遍历投标
+                for (int i = 1; i <= br.getBids().size(); i++) {
+                    Bid bid = br.getBids().get(i - 1);
+                    // 根据投标减少投资人的冻结金额
+                    Long bidUserId = bid.getBidUser().getId();
+                    Account bidAccount = updates.get(bidUserId);
+                    if (bidAccount == null) {
+                        bidAccount = accountService.get(bidUserId);
+                        updates.put(bidUserId, bidAccount);
+                    }
+                    bidAccount.setFrozenAmount(bidAccount.getFrozenAmount().subtract(bid.getAvailableAmount()));
+                    // 生成成功投标流水
+                    accountFlowService.bidSuccess(bid, bidAccount);
+                    // 计算代收利息和代收本金，待收本金=这次的投标金额
+                    bidAccount.setUnReceivePrincipal(bidAccount.getUnReceivePrincipal().add(bid.getAvailableAmount()));
+                    // 如果当前投标是整个投标列表中的最后一个投标;这个投标的利息=借款总回报利息-累加的投标利息|
+                    BigDecimal bidInterest = BidConst.ZERO;
+                    if (i < br.getBids().size()) {
+                        // 待收利息=投标金额/借款总金额*借款总回报利息
+                        bidInterest = bid.getAvailableAmount().divide(br.getBidRequestAmount(),
+                                BidConst.CAL_SCALE, RoundingMode.HALF_UP).multiply(br.getTotalRewardAmount());
+
+                        bidInterest = DecimalFormatUtil.formatBigDecimal(bidInterest, BidConst.STORE_SCALE);
+                        // 累加
+                        totalBidInterest = totalBidInterest.add(bidInterest);
+                    } else {
+                        bidInterest = br.getTotalRewardAmount().subtract(totalBidInterest);
+                    }
+                    bidAccount.setUnReceiveInterest(bidAccount.getUnReceiveInterest().add(bidInterest));
+                }
+
+                // 生成还款对象和回款对象
+
+            } else {
+                // 审核拒绝
+                // 1.修改借款状态
+                br.setBidRequestState(BidConst.BID_REQUEST_STATE_REJECTED);
+                // 2.退钱
+                returnMoney(br);
+                // 3.移除借款人借款的状态码
                 UserInfo borrowUser = userInfoService.get(br.getCreateUser().getId());
                 borrowUser.removeState(BitStatesUtils.OP_HAS_BID_REQUEST_PROCESS);
                 userInfoService.update(borrowUser);

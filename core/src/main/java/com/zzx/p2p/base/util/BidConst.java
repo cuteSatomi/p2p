@@ -109,11 +109,11 @@ public class BidConst {
 
     /* ============系统账户流水类型============= */
     /** 系统账户收到账户管理费（借款管理费） */
-    public final static int SYSTEM_ACCOUNT_ACTIONTYPE_MANAGE_CHARGE = 1;
+    public final static int SYSTEM_ACCOUNT_ACTION_TYPE_MANAGE_CHARGE = 1;
     /** 系统账户收到利息管理费 */
-    public final static int SYSTEM_ACCOUNT_ACTIONTYPE_INTREST_MANAGE_CHARGE = 2;
+    public final static int SYSTEM_ACCOUNT_ACTION_TYPE_INTEREST_MANAGE_CHARGE = 2;
     /** 系统账户收到提现手续费 */
-    public final static int SYSTEM_ACCOUNT_ACTIONTYPE_WITHDRAW_MANAGE_CHARGE = 3;
+    public final static int SYSTEM_ACCOUNT_ACTION_TYPE_WITHDRAW_MANAGE_CHARGE = 3;
 
     /* =========还款状态=============== */
     /** 正常待还 */

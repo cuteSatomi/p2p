@@ -76,4 +76,12 @@ public interface BidRequestService {
      * @param remark
      */
     void fullAudit1(Long id, int state, String remark);
+
+    /**
+     * 满标二审
+     * @param id
+     * @param state
+     * @param remark
+     */
+    void fullAudit2(Long id, int state, String remark);
 }

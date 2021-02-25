@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zzx.p2p.business.mapper.SystemAccountMapper">
+    <resultMap id="BaseResultMap" type="com.zzx.p2p.business.domain.SystemAccount">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="version" property="version" jdbcType="INTEGER"/>
+        <result column="usable_amount" property="usableAmount" jdbcType="DECIMAL"/>
+        <result column="frozen_amount" property="frozenAmount" jdbcType="DECIMAL"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into `system_account` (version, usable_amount, frozen_amount)
+        values (0, #{usableAmount,jdbcType=DECIMAL}, #{frozenAmount,jdbcType=DECIMAL})
+    </insert>
+    <update id="updateByPrimaryKey">
+        update `system_account`
+        set version = version + 1,
+          usable_amount = #{totalBalance,jdbcType=DECIMAL},
+          frozen_amount = #{frozenAmount,jdbcType=DECIMAL}
+        where id = #{id,jdbcType=BIGINT} AND version = #{version}
+    </update>
+
+    <select id="selectCurrent" resultMap="BaseResultMap">
+        select id, version, usable_amount, frozen_amount
+        from `system_account`
+  </select>
+</mapper>
